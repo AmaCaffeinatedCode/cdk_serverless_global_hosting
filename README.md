@@ -1,58 +1,44 @@
+# Portfolio Infrastructure (AWS CDK)
 
-# Welcome to your CDK Python project!
+This repository contains the infrastructure as code (IaC) configuration for deploying a static portfolio website on AWS, using the AWS Cloud Development Kit (CDK) in Python.
 
-This is a blank project for CDK development with Python.
+## Overview
 
-The `cdk.json` file tells the CDK Toolkit how to execute your app.
+This CDK application provisions the following resources:
 
-This project is set up like a standard Python project.  The initialization
-process also creates a virtualenv within this project, stored under the `.venv`
-directory.  To create the virtualenv it assumes that there is a `python3`
-(or `python` for Windows) executable in your path with access to the `venv`
-package. If for any reason the automatic creation of the virtualenv fails,
-you can create the virtualenv manually.
+- **Amazon S3 Bucket** – Configured for static website hosting
+- **Amazon CloudFront Distribution** – Enables HTTPS, global content delivery, and automatic redirect to HTTPS
+- **Asset Deployment** – Deploys static assets to S3 and manages CloudFront cache invalidation
+- **CI/CD Pipeline** – GitHub Actions workflow automates deployment on push to the `main` branch
 
-To manually create a virtualenv on MacOS and Linux:
+## Stack Configuration
 
-```
-$ python3 -m venv .venv
-```
+- **Stack Name**: `PortfolioCdkStack`
+- **Region**: `us-east-1`
+- **Removal Policy**: `DESTROY` (intended for non-production use)
+- **S3 Auto-Delete Objects**: Enabled (cleans up S3 contents on stack removal)
 
-After the init process completes and the virtualenv is created, you can use the following
-step to activate your virtualenv.
+## Deployment
 
-```
-$ source .venv/bin/activate
-```
+Deployment is automated through GitHub Actions. To enable CI/CD, configure the following secrets in your repository:
 
-If you are a Windows platform, you would activate the virtualenv like this:
+- `AWS_ACCESS_KEY_ID`
+- `AWS_SECRET_ACCESS_KEY`
 
-```
-% .venv\Scripts\activate.bat
-```
+For manual deployment:
 
-Once the virtualenv is activated, you can install the required dependencies.
+```bash
+# Set up Python environment
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
 
-```
-$ pip install -r requirements.txt
-```
+# Deploy with AWS CDK
+cdk bootstrap
+cdk deploy
 
-At this point you can now synthesize the CloudFormation template for this code.
+## Additional Notes
 
-```
-$ cdk synth
-```
+This stack is intended for personal or demo environments. For production use, adjust security settings, region configurations, and resource lifecycle policies accordingly.
 
-To add additional dependencies, for example other CDK libraries, just add
-them to your `setup.py` file and rerun the `pip install -r requirements.txt`
-command.
-
-## Useful commands
-
- * `cdk ls`          list all stacks in the app
- * `cdk synth`       emits the synthesized CloudFormation template
- * `cdk deploy`      deploy this stack to your default AWS account/region
- * `cdk diff`        compare deployed stack with current state
- * `cdk docs`        open CDK documentation
-
-Enjoy!
+GitHub Actions workflow file is located in .github/workflows/.

@@ -1,10 +1,20 @@
-*.swp
-package-lock.json
-__pycache__
-.pytest_cache
-.venv
-*.egg-info
+# Python virtual environment
+.venv/
+env/
+venv/
 
-# CDK asset staging directory
-.cdk.staging
-cdk.out
+# Compiled Python files
+__pycache__/
+*.py[cod]
+
+# CDK output & context
+cdk.out/
+cdk.context.json
+
+# Node modules
+node_modules/
+
+# IDE/editor files
+.vscode/
+.idea/
+*.swp
