@@ -36,6 +36,7 @@ pip install -r requirements.txt
 # Deploy with AWS CDK
 cdk bootstrap
 cdk deploy
+```
 
 ## Additional Notes
 
