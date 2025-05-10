@@ -69,16 +69,6 @@ class PortfolioCdkApp(Stack):
             )
         )
 
-        # Grant CloudFront access to the S3 bucket
-        website_bucket.add_to_resource_policy(
-            iam.PolicyStatement(
-                actions=["s3:GetObject"],
-                resources=[f"{website_bucket.bucket_arn}/*"], # Access all objects in the bucket
-                principals=[iam.ArnPrincipal(oac.ref)],  # CloudFront service principal
-                conditions={"StringEquals": {"AWS:SourceArn": f"arn:aws:cloudfront::{self.account}:distribution/{distribution.ref}"}}
-            )
-        )
-
         # Deploy website files to S3 bucket
         s3deploy.BucketDeployment(self, "WebsiteDeployment",
             sources=[s3deploy.Source.asset("./website")],  # Local directory containing website files
