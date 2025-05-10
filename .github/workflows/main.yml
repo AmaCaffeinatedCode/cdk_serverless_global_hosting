@@ -1,46 +1,28 @@
-name: CDK Pipeline
+name: CDK Deploy and Destroy
 
 on:
   push:
+    branches:
+      - main
+      - '**'  # This allows the workflow to run on any branch (development)
+  workflow_dispatch: # Manually trigger the destroy job
 
 jobs:
-  build-deploy:
+  build-and-deploy:
+    if: github.ref == 'refs/heads/main' || (github.ref != 'refs/heads/main' && !contains(github.event.head_commit.message, '[skip-ci]')) # Skip deploy on dev if [skip-ci] is in the commit
     runs-on: ubuntu-latest
-
-    # Only skip if it's NOT main AND contains [skip-ci]
-    if: |
-      github.ref == 'refs/heads/main' || (
-        github.ref != 'refs/heads/main' &&
-        !contains(github.event.head_commit.message, '[skip-ci]')
-      )
-
-    env:
-      AWS_DEFAULT_REGION: us-east-1
 
     steps:
       - name: Checkout
         uses: actions/checkout@v3
 
-      - name: Set ENVIRONMENT variable based on branch
-        run: |
-          if [[ "${GITHUB_REF##*/}" == "main" ]]; then
-            echo "ENVIRONMENT=prod" >> $GITHUB_ENV
-          else
-            echo "ENVIRONMENT=dev" >> $GITHUB_ENV
-          fi
+      - name: Set environment
+        run: echo "ENVIRONMENT=prod" >> $GITHUB_ENV
+        if: github.ref == 'refs/heads/main'
 
-      - name: Extract GitHub Project URL
-        run: echo "PROJECT_URL=https://github.com/${{ github.repository }}" >> $GITHUB_ENV
-
-      - name: Set up Python
-        uses: actions/setup-python@v3
-        with:
-          python-version: "3.9"
-
-      - name: Set up Node.js (for CDK CLI)
-        uses: actions/setup-node@v3
-        with:
-          node-version: 20
+      - name: Set environment for dev
+        run: echo "ENVIRONMENT=dev" >> $GITHUB_ENV
+        if: github.ref != 'refs/heads/main'
 
       - name: Install AWS CDK CLI
         run: npm install -g aws-cdk
@@ -58,15 +40,14 @@ jobs:
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          PROJECT_URL: ${{ env.PROJECT_URL }}
+          AWS_DEFAULT_REGION: us-east-1
 
       - name: Deploy CDK
         run: cdk deploy --require-approval never --verbose
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          ENVIRONMENT: ${{ env.ENVIRONMENT }}
-          PROJECT_URL: ${{ env.PROJECT_URL }}
+          AWS_DEFAULT_REGION: us-east-1
 
   destroy:
     needs: build-and-deploy
