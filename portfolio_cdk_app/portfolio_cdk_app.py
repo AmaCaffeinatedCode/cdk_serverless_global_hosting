@@ -14,7 +14,7 @@ class PortfolioCdkApp(Stack):
         super().__init__(scope, construct_id,
             stack_name="PortfolioCdkStack",
             description="Portfolio website infrastructure stack",
-            tags={"Project": "Portfolio"},
+            tags={"project": "portfolio"},
             env={"region": "us-east-1"},
             **kwargs
         )

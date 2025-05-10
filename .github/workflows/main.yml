@@ -71,8 +71,6 @@ jobs:
   manual-destroy:
     needs: build-deploy
     runs-on: ubuntu-latest
-
-    # Only run if build-deploy ran (i.e., not skipped by [skip-ci])
     if: success()
 
     environment:
@@ -80,13 +78,6 @@ jobs:
       url: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
 
     steps:
-      - name: Await manual approval
-        uses: reviewdog/action-wait@v1 # lightweight wait step
-        with:
-          timeout_minutes: 60
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
       - name: Checkout
         uses: actions/checkout@v3
 
