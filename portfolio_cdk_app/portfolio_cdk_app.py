@@ -73,8 +73,8 @@ class PortfolioCdkApp(Stack):
         website_bucket.add_to_resource_policy(
             iam.PolicyStatement(
                 actions=["s3:GetObject"],
-                resources=[f"{website_bucket.bucket_arn}/*"],  # Access all objects in the bucket
-                principals=[iam.ArnPrincipal("arn:aws:iam::cloudfront:user/CloudFront Origin Access Identity E*")],  # CloudFront service principal
+                resources=[f"{website_bucket.bucket_arn}/*"], # Access all objects in the bucket
+                principals=[iam.ArnPrincipal(oac.ref)],  # CloudFront service principal
                 conditions={"StringEquals": {"AWS:SourceArn": f"arn:aws:cloudfront::{self.account}:distribution/{distribution.ref}"}}
             )
         )
