@@ -4,12 +4,12 @@ on:
   push:
     branches:
       - main
-      - '**'  # This allows the workflow to run on any branch (development)
-  workflow_dispatch: # Manually trigger the destroy job
+      - '**'
+  workflow_dispatch:
 
 jobs:
   build-and-deploy:
-    if: github.ref == 'refs/heads/main' || (github.ref != 'refs/heads/main' && !contains(github.event.head_commit.message, '[skip-ci]')) # Skip deploy on dev if [skip-ci] is in the commit
+    if: github.ref == 'refs/heads/main' || (github.ref != 'refs/heads/main' && !contains(github.event.head_commit.message, '[skip-ci]'))
     runs-on: ubuntu-latest
 
     steps:
@@ -52,7 +52,7 @@ jobs:
   destroy:
     needs: build-and-deploy
     runs-on: ubuntu-latest
-    if: github.event_name == 'workflow_dispatch' # Ensures the destroy job is only triggered manually
+    if: github.event_name == 'workflow_dispatch'
 
     steps:
       - name: Checkout
