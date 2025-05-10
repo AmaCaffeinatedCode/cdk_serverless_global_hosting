@@ -23,6 +23,9 @@ jobs:
         run: echo "ENVIRONMENT=dev" >> $GITHUB_ENV
         if: github.ref != 'refs/heads/main'
 
+      - name: Set PROJECT_URL
+        run: echo "PROJECT_URL=https://github.com/${{ github.repository }}" >> $GITHUB_ENV
+
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
