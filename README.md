@@ -43,7 +43,9 @@ cdk deploy
 ## GitHub Actions
 
 ### CI/CD Workflow (`main.yml`)
-This repository includes a GitHub Actions workflow file (`.github/workflows/main.yml`) that automates the deployment process. However, if you want to skip the CI/CD pipeline during specific pushes (e.g., when pushing tags or for certain branches), you can add the `[skip-ci]` label to the commit message. This will prevent the pipeline from triggering for that specific commit.
+This repository includes a GitHub Actions workflow file (`.github/workflows/main.yml`) that automates the deployment process. However, if you want to skip the CI/CD pipeline during specific pushes, you can add the `[skip-ci]` label to the commit message. This will prevent the pipeline from triggering for that specific commit. 
+
+This condition only applies to non-main branches. The main branch is treated as the production environment and will always trigger the pipeline regardless of conditions.
 
 ### Stack Destruction Workflow (`destroy.yml`)
 A separate GitHub Actions workflow file (`.github/workflows/destroy.yml`) is provided to allow easy destruction of the entire stack. This workflow will delete all resources provisioned by the CDK stack.
