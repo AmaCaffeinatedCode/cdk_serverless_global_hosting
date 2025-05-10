@@ -51,7 +51,7 @@ class PortfolioCdkApp(Stack):
                 origins=[
                     cloudfront.CfnDistribution.OriginProperty(
                         id="S3Origin",
-                        domain_name=website_bucket.bucket_website_domain_name,
+                        domain_name=website_bucket.bucket_regional_domain_name,
                         origin_access_control_id=oac.ref,  # Use OAC for secure access
                         s3_origin_config=cloudfront.CfnDistribution.S3OriginConfigProperty(
                             origin_access_identity=""  # Origin access identity is empty because OAC is used
