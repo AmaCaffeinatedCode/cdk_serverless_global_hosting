@@ -68,14 +68,10 @@ jobs:
           ENVIRONMENT: ${{ env.ENVIRONMENT }}
           PROJECT_URL: ${{ env.PROJECT_URL }}
 
-  manual-destroy:
-    needs: build-deploy
+  destroy:
+    needs: build-and-deploy
     runs-on: ubuntu-latest
-    if: success()
-
-    environment:
-      name: manual-destroy
-      url: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+    if: github.event_name == 'workflow_dispatch' # Ensures the destroy job is only triggered manually
 
     steps:
       - name: Checkout
@@ -104,4 +100,4 @@ jobs:
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          ENVIRONMENT: ${{ env.ENVIRONMENT }}
+          AWS_DEFAULT_REGION: us-east-1
