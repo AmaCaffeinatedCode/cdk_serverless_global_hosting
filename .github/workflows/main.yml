@@ -1,17 +1,33 @@
-name: CDK Deploy
+name: CDK Pipeline
 
 on:
   push:
-    branches:
-      - main
 
 jobs:
-  build-and-deploy:
-    if: '!contains(github.event.head_commit.message, ''[skip-ci]'')'
+  build-deploy:
     runs-on: ubuntu-latest
+
+    # Only skip if it's NOT main AND contains [skip-ci]
+    if: |
+      github.ref == 'refs/heads/main' || (
+        github.ref != 'refs/heads/main' &&
+        !contains(github.event.head_commit.message, '[skip-ci]')
+      )
+
+    env:
+      AWS_DEFAULT_REGION: us-east-1
+
     steps:
       - name: Checkout
         uses: actions/checkout@v3
+
+      - name: Set ENVIRONMENT variable based on branch
+        run: |
+          if [[ "${GITHUB_REF##*/}" == "main" ]]; then
+            echo "ENVIRONMENT=prod" >> $GITHUB_ENV
+          else
+            echo "ENVIRONMENT=dev" >> $GITHUB_ENV
+          fi
 
       - name: Extract GitHub Project URL
         run: echo "PROJECT_URL=https://github.com/${{ github.repository }}" >> $GITHUB_ENV
@@ -20,6 +36,11 @@ jobs:
         uses: actions/setup-python@v3
         with:
           python-version: "3.9"
+
+      - name: Set up Node.js (for CDK CLI)
+        uses: actions/setup-node@v3
+        with:
+          node-version: 20
 
       - name: Install AWS CDK CLI
         run: npm install -g aws-cdk
@@ -37,7 +58,6 @@ jobs:
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_DEFAULT_REGION: us-east-1
           PROJECT_URL: ${{ env.PROJECT_URL }}
 
       - name: Deploy CDK
@@ -45,6 +65,52 @@ jobs:
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_DEFAULT_REGION: us-east-1
+          ENVIRONMENT: ${{ env.ENVIRONMENT }}
           PROJECT_URL: ${{ env.PROJECT_URL }}
 
+  manual-destroy:
+    needs: build-deploy
+    runs-on: ubuntu-latest
+
+    # Only run if build-deploy ran (i.e., not skipped by [skip-ci])
+    if: success()
+
+    environment:
+      name: manual-destroy
+      url: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+
+    steps:
+      - name: Await manual approval
+        uses: reviewdog/action-wait@v1 # lightweight wait step
+        with:
+          timeout_minutes: 60
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v3
+        with:
+          python-version: "3.9"
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 20
+
+      - name: Install AWS CDK CLI
+        run: npm install -g aws-cdk
+
+      - name: Install dependencies
+        run: |
+          pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Destroy CDK Stack
+        run: cdk destroy --force
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          ENVIRONMENT: ${{ env.ENVIRONMENT }}
