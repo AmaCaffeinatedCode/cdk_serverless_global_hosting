@@ -24,8 +24,6 @@ class PortfolioCdkApp(Stack):
 
         # Private S3 bucket for hosting website content
         website_bucket = s3.Bucket(self, "WebsiteBucket",
-            website_index_document="index.html",
-            website_error_document="error.html",
             public_read_access=False,  # Restrict public access to bucket
             block_public_access=s3.BlockPublicAccess.BLOCK_ALL,  # Block all public access
             removal_policy=RemovalPolicy.DESTROY,  # Destroy bucket on stack deletion
