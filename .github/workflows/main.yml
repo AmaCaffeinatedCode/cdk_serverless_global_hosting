@@ -1,4 +1,4 @@
-name: CDK Deploy and Destroy
+name: CDK Deploy
 
 on:
   push:
