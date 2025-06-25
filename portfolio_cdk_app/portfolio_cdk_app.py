@@ -101,6 +101,7 @@ class PortfolioCdkApp(Stack):
                 domain_name=Fn.get_att(distribution.logical_id, "DomainName").to_string()  # Get CloudFront domain name
             ),
             distribution_paths=["/*"]  # Deploy all files to CloudFront cache
+            exclude=[".git/*", "README.md"]
         )
 
         # Output the CloudFront distribution domain name (website URL)
