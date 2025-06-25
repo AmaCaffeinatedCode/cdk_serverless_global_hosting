@@ -64,7 +64,7 @@ class PortfolioCdkApp(Stack):
                     compress=True,  # Enable compression for faster delivery
                     cache_policy_id="658327ea-f89d-4fab-a63d-7e88639e58f6"  # Use AWS managed cache policy (CachingOptimized)
                 ),
-                error_responses=[
+                custom_error_responses=[
                     cloudfront.CfnDistribution.CustomErrorResponseProperty(
                         error_code=403,
                         response_code=404,
