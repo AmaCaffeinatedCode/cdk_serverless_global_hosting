@@ -93,7 +93,7 @@ class PortfolioCdkApp(Stack):
 
         # Deploy website files to S3 bucket
         s3deploy.BucketDeployment(self, "WebsiteDeployment",
-            sources=[s3deploy.Source.asset("./website")],  # Local directory containing website files
+            sources=[s3deploy.Source.asset("./website", exclude=[".git", "README.md"])],  # Local directory containing website files
             destination_bucket=website_bucket,
             distribution=cloudfront.Distribution.from_distribution_attributes(
                 self, "DistAttr",
@@ -101,7 +101,6 @@ class PortfolioCdkApp(Stack):
                 domain_name=Fn.get_att(distribution.logical_id, "DomainName").to_string()  # Get CloudFront domain name
             ),
             distribution_paths=["/*"]  # Deploy all files to CloudFront cache
-            exclude=[".git/*", "README.md"]
         )
 
         # Output the CloudFront distribution domain name (website URL)
