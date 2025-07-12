@@ -6,7 +6,7 @@ from portfolio_cdk_app.portfolio_cdk_app import PortfolioCdkApp
 
 RESOURCE_TAGS = {
     "project_url": os.getenv("PROJECT_URL"),
-    "environment": os.getenv("ENVIRONMENT", "dev")
+    "Environment": os.getenv("ENVIRONMENT", "dev")
 }
 
 app = cdk.App()
