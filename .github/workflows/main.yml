@@ -6,6 +6,9 @@ on:
       - main
       - '**'
 
+env:
+  AWS_DEFAULT_REGION: us-east-1
+
 jobs:
   build-and-deploy:
     if: github.ref == 'refs/heads/main' || (github.ref != 'refs/heads/main' && !contains(github.event.head_commit.message, '[skip-ci]'))
@@ -15,11 +18,11 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
-      - name: Set environment for prod
+      - name: Set environment for prod (main branch)
         run: echo "ENVIRONMENT=prod" >> $GITHUB_ENV
         if: github.ref == 'refs/heads/main'
 
-      - name: Set environment for dev
+      - name: Set environment for dev (other branches)
         run: echo "ENVIRONMENT=dev" >> $GITHUB_ENV
         if: github.ref != 'refs/heads/main'
 
@@ -35,6 +38,13 @@ jobs:
         uses: actions/setup-python@v3
         with:
           python-version: "3.9"
+        
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_DEFAULT_REGION }}
 
       - name: Install AWS CDK CLI
         run: npm install -g aws-cdk
@@ -46,21 +56,13 @@ jobs:
       
       - name: Checkout private website repo
         run: |
-          git clone https://x-access-token:${{ secrets.PRIVATE_REPO_TOKEN }}@github.com/AmaCaffeinatedCode/portfolio_website.git website
+          git clone https://x-access-token:${{ secrets.PRIVATE_REPO_TOKEN }}@github.com/${{ secrets.PRIVATE_REPO_OWNER }}/${{ secrets.PRIVATE_REPO_NAME }}.git website
 
       - name: Synthesize CDK
         run: cdk synth
 
       - name: Diff CDK Changes
         run: cdk diff
-        env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_DEFAULT_REGION: us-east-1
 
       - name: Deploy CDK
         run: cdk deploy --require-approval never --verbose
-        env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_DEFAULT_REGION: us-east-1

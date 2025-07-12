@@ -2,7 +2,7 @@
 
 This repository contains the infrastructure-as-code (IaC) configuration for deploying a static portfolio website on AWS, utilizing the AWS Cloud Development Kit (CDK) in Python.
 
-## Overview
+## Project Overview
 
 This CDK application provisions the following AWS resources:
 
@@ -18,14 +18,19 @@ This setup ensures fast, secure delivery of the portfolio website, leveraging AW
 - **Stack Name:** `PortfolioCdkStack`
 - **Region:** `us-east-1`
 - **Removal Policy:** `DESTROY` (automatically cleans up resources on stack deletion for non-production use)
-- **S3 Auto-Delete Objects:** Enabled (removes all S3 objects when the stack is deleted to avoid orphaned data)
+- **S3 Auto-Delete Objects:** Enabled (removes all S3 objects when the stack is destroyed to avoid orphaned data)
 
-## Deployment
+## Usage
 
 Deployment is automated via GitHub Actions. To enable CI/CD, configure the following secrets in your repository:
 
 - `AWS_ACCESS_KEY_ID`
 - `AWS_SECRET_ACCESS_KEY`
+- `PRIVATE_REPO_TOKEN` – GitHub token with 'repo' scope
+- `PRIVATE_REPO_OWNER` – GitHub username or organization that owns the private repo (e.g. `Example_User`)
+- `PRIVATE_REPO_NAME` – Name of the private repo (e.g. `Website_repo`)
+
+The repository secrets should grant access to the **private website repository**, enabling its deployment to the S3 bucket for static website hosting.
 
 ### Manual Deployment
 
