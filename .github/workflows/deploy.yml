@@ -29,6 +29,12 @@ jobs:
       - name: Set PROJECT_URL
         run: echo "PROJECT_URL=https://github.com/${{ github.repository }}" >> $GITHUB_ENV
 
+      - name: Set ROOT_DOMAIN
+        run: echo "ROOT_DOMAIN=${{ secrets.ROOT_DOMAIN }}" >> $GITHUB_ENV
+
+      - name: Set SUBDOMAIN
+        run: echo "SUBDOMAIN=${{ secrets.SUBDOMAIN }}" >> $GITHUB_ENV
+
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
@@ -64,5 +70,5 @@ jobs:
       - name: Diff CDK Changes
         run: cdk diff
 
-      - name: Deploy CDK
-        run: cdk deploy --require-approval never --verbose
+#      - name: Deploy CDK
+#        run: cdk deploy --require-approval never --verbose

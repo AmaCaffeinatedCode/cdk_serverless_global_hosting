@@ -2,7 +2,7 @@
 import os
 import aws_cdk as cdk
 from aws_cdk import Tags
-from portfolio_cdk_app.portfolio_cdk_app import PortfolioCdkApp
+from cdk_serverless_global_hosting.cdk_serverless_global_hosting import CdkServerlessGlobalHostingStack
 
 RESOURCE_TAGS = {
     "project_url": os.getenv("PROJECT_URL"),
@@ -15,6 +15,6 @@ for key, value in RESOURCE_TAGS.items():
     if value:
         Tags.of(app).add(key, value)
 
-PortfolioCdkApp(app, "PortfolioCdkApp")
+CdkServerlessGlobalHostingStack(app, "CdkServerlessGlobalHostingStack")
 
 app.synth()
