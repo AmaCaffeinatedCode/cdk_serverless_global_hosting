@@ -29,11 +29,10 @@ jobs:
       - name: Set PROJECT_URL
         run: echo "PROJECT_URL=https://github.com/${{ github.repository }}" >> $GITHUB_ENV
 
-      - name: Set ROOT_DOMAIN
-        run: echo "ROOT_DOMAIN=${{ secrets.ROOT_DOMAIN }}" >> $GITHUB_ENV
-
-      - name: Set SUBDOMAIN
-        run: echo "SUBDOMAIN=${{ secrets.SUBDOMAIN }}" >> $GITHUB_ENV
+      - name: Set ROOT_DOMAIN and SUBDOMAIN
+        run: |
+          echo "ROOT_DOMAIN=${{ vars.ROOT_DOMAIN }}" >> $GITHUB_ENV
+          echo "SUBDOMAIN=${{ vars.SUBDOMAIN }}" >> $GITHUB_ENV
 
       - name: Set up Node.js
         uses: actions/setup-node@v3
