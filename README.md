@@ -34,10 +34,13 @@ Deployment is automated via GitHub Actions. To enable CI/CD, configure the follo
 - `AWS_ACCESS_KEY_ID`
 - `AWS_SECRET_ACCESS_KEY`
 - `PRIVATE_REPO_TOKEN` – GitHub token with repo scope
-- `PRIVATE_REPO_OWNER` – GitHub username or organization that owns the private repo (e.g. `Example_User`)
-- `PRIVATE_REPO_NAME` – Name of the private repo (e.g. `Website_repo`)
 - `ROOT_DOMAIN` – Your domain name (e.g. `example.com`)
 - `SUBDOMAIN` – Subdomain for the website (default: `www`)
+
+Additionally, configure the following **repository variables**:
+
+- `PRIVATE_REPO_OWNER` – GitHub username or organization that owns the private repo (e.g. `Example_User`)
+- `PRIVATE_REPO_NAME` – Name of the private repo (e.g. `Website_repo`)
 
 These values will be injected into the GitHub Actions workflow as environment variables and used by CDK at deploy time.
 
