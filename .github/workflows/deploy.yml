@@ -63,6 +63,9 @@ jobs:
       - name: Checkout private website repo
         run: |
           git clone https://x-access-token:${{ secrets.PRIVATE_REPO_TOKEN }}@github.com/${{ env.PRIVATE_REPO_OWNER }}/${{ env.PRIVATE_REPO_NAME }}.git website
+        env:
+          PRIVATE_REPO_OWNER: ${{ vars.PRIVATE_REPO_OWNER }}
+          PRIVATE_REPO_NAME: ${{ vars.PRIVATE_REPO_NAME }}
 
       - name: Synthesize CDK
         run: cdk synth
